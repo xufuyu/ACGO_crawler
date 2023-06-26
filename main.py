@@ -1,10 +1,17 @@
+import time
+
+import matplotlib.pyplot as plt
 import requests
 from lxml import etree
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+chinese_time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+
+print('运行时间：',chinese_time,'\n')
 
 def msg(msg_text='TEST', msg_key='PDU23609TxBbjyT6HfCwEZUt4zLlxF2pfMOf7MGa9'):
     url = 'https://api2.pushdeer.com/message/push?pushkey={}&text={}'.format(msg_key,msg_text)
@@ -47,6 +54,130 @@ def find(html):
 
     # 打印提取到的内容
     return span_content
+
+def data(mode):
+    file = open('output.txt', 'w', encoding='utf-8')
+    if mode == "1":
+        print('已运行，请等待\n')
+        for i in user_id_fir:
+            name = user_id_fir[i]
+            ac_data = find(acgo(i))
+            print(name, ac_data)
+            file.write(name + ' ' + ac_data + '\n')
+    elif mode == "2":
+        print('已运行，请等待\n')
+        for i in user_id_sat:
+            name = user_id_sat[i]
+            ac_data = find(acgo(i))
+            print(name, ac_data)
+            file.write(name + ' ' + ac_data + '\n')
+    elif mode == "3":
+        print('已运行，请等待\n')
+        for i in user_id_all:
+            name = user_id_all[i]
+            ac_data = find(acgo(i))
+            print(name, ac_data)
+            file.write(name + ' ' + ac_data + '\n')
+    elif mode == "4":
+        print('给你做出自动爬取就已经不错了，还想要自动排序？想得美！已为你自动选择1')
+        print('已运行，请等待\n')
+        for i in user_id_fir:
+            name = user_id_fir[i]
+            ac_data = find(acgo(i))
+            print(name, ac_data)
+            file.write(name + ' ' + ac_data + '\n')
+    elif mode == "5":
+        print('给你做出自动爬取就已经不错了，还想要自动排序？想得美！已为你自动选择2')
+        print('已运行，请等待\n')
+        for i in user_id_sat:
+            name = user_id_sat[i]
+            ac_data = find(acgo(i))
+            print(name, ac_data)
+            file.write(name + ' ' + ac_data + '\n')
+    elif mode == "6":
+        print('给你做出自动爬取就已经不错了，还想要自动排序？想得美！已为你自动选择3')
+        print('已运行，请等待\n')
+        for i in user_id_all:
+            name = user_id_all[i]
+            ac_data = find(acgo(i))
+            print(name, ac_data)
+            file.write(name + ' ' + ac_data + '\n')
+    else:
+        print('说人话!!!')
+    file.close()
+    print('\n'+'内容已成功写入到output.txt文件中。')
+
+
+def binary_insertion_sort(input_file, output_file):
+    # 读取数据
+    with open(input_file, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+
+    # 使用二分插入排序进行逆序排序
+    for i in range(1, len(lines)):
+        key = lines[i].split()
+        name = key[0]
+        score = int(key[1])
+
+        low, high = 0, i - 1
+
+        while low <= high:
+            mid = (low + high) // 2
+            if int(lines[mid].split()[1]) < score:
+                high = mid - 1
+            else:
+                low = mid + 1
+
+        for j in range(i - 1, low - 1, -1):
+            lines[j + 1] = lines[j]
+
+        lines[low] = f"{name} {score}"
+
+    # 添加排名
+    ranked_lines = [f"{i + 1}. {line}\n" for i, line in enumerate(lines)]
+
+    # 写入排序后的结果到新的txt文档
+    with open(output_file, 'w', encoding='utf-8') as file:
+        file.writelines(ranked_lines)
+
+    print("数据已成功逆序排序并写入到sorted_output.txt文件中。")
+
+
+
+def visualize_data(input_file, output_file):
+    # 读取数据
+    with open(input_file, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+
+    # 去除空行
+    lines = [line.strip() for line in lines if line.strip() != '']
+
+    # 提取姓名和分数
+    names = [line.split()[1] for line in lines]
+    scores = [int(line.split()[2]) for line in lines]
+
+    # 设置字体
+    plt.rcParams['font.family'] = 'SimHei'  # 使用黑体作为字体（示例）
+
+    # 创建柱状图
+    plt.figure(figsize=(10, 6))
+    plt.bar(names, scores)
+
+    # 添加标题和标签
+    plt.title('排名情况')
+    plt.xlabel('姓名')
+    plt.ylabel('累计解题数')
+
+    # 自动调整名称显示角度以避免重叠
+    plt.xticks(rotation=45, ha='right')
+
+    # 保存图像
+    plt.tight_layout()
+    plt.savefig(output_file)
+
+    print(f"可视化图像已成功保存为{output_file}。")
+
+
 
 # user_id对照字典，为防止有人改备注名、乱拉小号或备注名中存在非法字符导致程序报错，所以此字典由|疯子XUFUYU|人工统计于2023/6/25/15:19:23/
 user_id_all = {"234895":"孔浩轩",
@@ -101,48 +232,17 @@ user_id_sat = {"234895":"孔浩轩",
                "3798554":"吴宇浩",
                }
 
-msg('有人运行了你的程序！')
+msg('有人运行了你的程序！时间：{}'.format(chinese_time))
 
-user_input = input("请输入你要的方式：\n1.周五\n2.周六\n3.全部\n4.周五并排序\n5.周六并排序\n6.全部并排序\n")
+user_input = input("请输入你要的方式：\n1.周五并排序并生成柱状图\n2.周六并排序并生成柱状图\n3.全部并排序并生成柱状图\n")
 
-if user_input == "1":
-    print('已运行，请等待')
-    for i in user_id_fir:
-        name = user_id_fir[i]
-        data = find(acgo(i))
-        print(name, data)
-elif user_input == "2":
-    print('已运行，请等待')
-    for i in user_id_sat:
-        name = user_id_sat[i]
-        data = find(acgo(i))
-        print(name, data)
-elif user_input == "3":
-    print('已运行，请等待')
-    for i in user_id_all:
-        name = user_id_all[i]
-        data = find(acgo(i))
-        print(name, data)
-elif user_input == "4":
-    print('给你做出自动爬取就已经不错了，还想要自动排序？想得美！已为你自动选择1')
-    print('已运行，请等待')
-    for i in user_id_fir:
-        name = user_id_fir[i]
-        data = find(acgo(i))
-        print(name, data)
-elif user_input == "5":
-    print('给你做出自动爬取就已经不错了，还想要自动排序？想得美！已为你自动选择2')
-    print('已运行，请等待')
-    for i in user_id_sat:
-        name = user_id_sat[i]
-        data = find(acgo(i))
-        print(name, data)
-elif user_input == "6":
-    print('给你做出自动爬取就已经不错了，还想要自动排序？想得美！已为你自动选择3')
-    print('已运行，请等待')
-    for i in user_id_all:
-        name = user_id_all[i]
-        data = find(acgo(i))
-        print(name, data)
-else:
-    print('说人话!!!')
+data(user_input)
+
+# 调用函数进行排序
+binary_insertion_sort('output.txt', 'sorted_output.txt')
+
+# 调用函数生成可视化图像
+visualize_data('sorted_output.txt', 'ranking_visualization.png')
+
+
+msg('安全运行未报错！时间：{}'.format(chinese_time))
