@@ -1,17 +1,17 @@
-import os
 import time
 import tkinter as tk
 import matplotlib.pyplot as plt
 import requests
 from lxml import etree
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.figure import Figure
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-# from PIL import Image, ImageTk
+from tkinter import ttk
+
 
 chinese_time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 
@@ -71,6 +71,25 @@ def find(html):
 def data():
     mode = option_var.get()
     root.destroy()
+
+    # 创建主窗口
+    root_add = tk.Tk()
+    center_window(root_add, 300, 100)
+    # 禁止窗口调整大小
+    root_add.resizable(width=False, height=False)
+    root_add.title("加载中")
+
+    # 创建Label小部件并显示文字
+    tk.Label(root_add, text="加载中...").pack()
+
+    # 设置加载动画参数
+    progress_var = tk.DoubleVar()  # 加载进度变量，取值范围为0~100
+    progress_var.set(0)  # 初始值为0
+
+    # 创建加载动画组件
+    progress_bar = ttk.Progressbar(root_add, variable=progress_var, maximum=100, mode='determinate', length=200)
+    progress_bar.pack(pady=20)
+    num = 0
     file = open('output.txt', 'w', encoding='utf-8')
     if mode == "1":
         print('已运行，请等待\n')
@@ -78,23 +97,35 @@ def data():
             name = user_id_fir[i]
             ac_data = find(acgo(i))
             print(name, ac_data)
+            # 更新进度条
+            num += 1
+            progress_var.set(num * 100 / len(user_id_fir))
+            root_add.update()
             file.write(name + ' ' + ac_data + '\n')
+
     elif mode == "2":
         print('已运行，请等待\n')
         for i in user_id_sat:
             name = user_id_sat[i]
             ac_data = find(acgo(i))
             print(name, ac_data)
-            file.write(name + ' ' + ac_data + '\n')
+            # 更新进度条
+            num += 1
+            progress_var.set(num * 100 / len(user_id_sat))
+            root_add.update()
+
     elif mode == "3":
         print('已运行，请等待\n')
         for i in user_id_all:
             name = user_id_all[i]
             ac_data = find(acgo(i))
             print(name, ac_data)
+            # 更新进度条
+            num += 1
+            progress_var.set(num * 100 / len(user_id_all))
+            root_add.update()
             file.write(name + ' ' + ac_data + '\n')
-    else:
-        print('说人话!!!')
+
     file.close()
     print('\n'+'内容已成功写入到output.txt文件中。')
 
@@ -104,8 +135,13 @@ def data():
 
     # 调用函数生成可视化图像
     visualize_data('sorted_output.txt', 'ranking_visualization.png')
+    root_add.destroy()
 
     tk_output()
+
+    # 运行主循环
+    root_add.mainloop()
+
 
 
 
@@ -172,6 +208,10 @@ def visualize_data(input_file, output_file):
     # 自动调整名称显示角度以避免重叠
     plt.xticks(rotation=45, ha='right')
 
+    # 在每个柱上标出详细数据
+    for i in range(len(names)):
+        plt.text(names[i], scores[i], str(scores[i]), ha='center', va='bottom')
+
     # 保存图像
     plt.tight_layout()
     plt.savefig(output_file)
@@ -179,13 +219,17 @@ def visualize_data(input_file, output_file):
     print(f"可视化图像已成功保存为{output_file}。")
 
 
+
 def tk_output():
     # 创建Tkinter窗口
     window = tk.Tk()
     window.title("输出窗口")
+    center_window(window, 1000, 600)
+    # 禁止窗口调整大小
+    window.resizable(width=False, height=False)
 
     # 创建Matplotlib画布
-    figure = Figure(figsize=(10, 6), dpi=100)
+    figure = Figure(figsize=(20, 12), dpi=100)
     canvas = FigureCanvasTkAgg(figure, master=window)
 
     # 在画布上绘制图像
@@ -200,19 +244,6 @@ def tk_output():
 
     # 将画布放置在窗口中
     canvas.get_tk_widget().pack()
-
-    # 指定文本文件路径
-    path_to_file = r"sorted_output.txt"
-
-    # 使用os模块的startfile()函数打开文本文件
-    os.startfile(path_to_file)
-
-    # 指定文本文件路径
-    path_to_file = r"ranking_visualization.png"
-
-    # 使用os模块的startfile()函数打开文本文件
-    os.startfile(path_to_file)
-
 
     # 运行Tkinter事件循环
     window.mainloop()
