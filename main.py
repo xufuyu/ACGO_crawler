@@ -1,5 +1,6 @@
+import os
 import time
-
+import tkinter as tk
 import matplotlib.pyplot as plt
 import requests
 from lxml import etree
@@ -8,15 +9,27 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+# from PIL import Image, ImageTk
 
 chinese_time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 
+
+
 print('运行时间：',chinese_time,'\n')
+
 
 def msg(msg_text='TEST', msg_key='PDU23609TxBbjyT6HfCwEZUt4zLlxF2pfMOf7MGa9'):
     url = 'https://api2.pushdeer.com/message/push?pushkey={}&text={}'.format(msg_key,msg_text)
     response = requests.get(url)
     return response
+
+def center_window(root_def, width, height):
+    screenwidth = root_def.winfo_screenwidth()  # 获取显示屏宽度
+    screenheight = root_def.winfo_screenheight()  # 获取显示屏高度
+    size = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)  # 设置窗口居中参数
+    root_def.geometry(size)  # 让窗口居中显示
 
 def acgo(acgo_user_id='2484958'):
     # 设置Chrome选项，使其在无头模式下运行（可选）
@@ -44,10 +57,10 @@ def acgo(acgo_user_id='2484958'):
 
 def find(html):
     # 假设html_doc是HTML文档字符串
-    root = etree.HTML(html)
+    root_tk = etree.HTML(html)
 
     # 使用给定的XPath表达式来查找目标<span>标签
-    span_tag = root.xpath('//*[@id="__next"]/div/main/div[2]/div[1]/div[2]/div[1]/span[1]/span')
+    span_tag = root_tk.xpath('//*[@id="__next"]/div/main/div[2]/div[1]/div[2]/div[1]/span[1]/span')
 
     # 提取标签内容
     span_content = span_tag[0].text if span_tag else None
@@ -55,7 +68,9 @@ def find(html):
     # 打印提取到的内容
     return span_content
 
-def data(mode):
+def data():
+    mode = option_var.get()
+    root.destroy()
     file = open('output.txt', 'w', encoding='utf-8')
     if mode == "1":
         print('已运行，请等待\n')
@@ -78,34 +93,20 @@ def data(mode):
             ac_data = find(acgo(i))
             print(name, ac_data)
             file.write(name + ' ' + ac_data + '\n')
-    elif mode == "4":
-        print('给你做出自动爬取就已经不错了，还想要自动排序？想得美！已为你自动选择1')
-        print('已运行，请等待\n')
-        for i in user_id_fir:
-            name = user_id_fir[i]
-            ac_data = find(acgo(i))
-            print(name, ac_data)
-            file.write(name + ' ' + ac_data + '\n')
-    elif mode == "5":
-        print('给你做出自动爬取就已经不错了，还想要自动排序？想得美！已为你自动选择2')
-        print('已运行，请等待\n')
-        for i in user_id_sat:
-            name = user_id_sat[i]
-            ac_data = find(acgo(i))
-            print(name, ac_data)
-            file.write(name + ' ' + ac_data + '\n')
-    elif mode == "6":
-        print('给你做出自动爬取就已经不错了，还想要自动排序？想得美！已为你自动选择3')
-        print('已运行，请等待\n')
-        for i in user_id_all:
-            name = user_id_all[i]
-            ac_data = find(acgo(i))
-            print(name, ac_data)
-            file.write(name + ' ' + ac_data + '\n')
     else:
         print('说人话!!!')
     file.close()
     print('\n'+'内容已成功写入到output.txt文件中。')
+
+    # 调用函数进行排序
+    binary_insertion_sort('output.txt', 'sorted_output.txt')
+
+
+    # 调用函数生成可视化图像
+    visualize_data('sorted_output.txt', 'ranking_visualization.png')
+
+    tk_output()
+
 
 
 def binary_insertion_sort(input_file, output_file):
@@ -157,7 +158,7 @@ def visualize_data(input_file, output_file):
     scores = [int(line.split()[2]) for line in lines]
 
     # 设置字体
-    plt.rcParams['font.family'] = 'SimHei'  # 使用黑体作为字体（示例）
+    plt.rcParams['font.family'] = 'SimHei'  # 使用黑体作为字体
 
     # 创建柱状图
     plt.figure(figsize=(10, 6))
@@ -177,6 +178,44 @@ def visualize_data(input_file, output_file):
 
     print(f"可视化图像已成功保存为{output_file}。")
 
+
+def tk_output():
+    # 创建Tkinter窗口
+    window = tk.Tk()
+    window.title("输出窗口")
+
+    # 创建Matplotlib画布
+    figure = Figure(figsize=(10, 6), dpi=100)
+    canvas = FigureCanvasTkAgg(figure, master=window)
+
+    # 在画布上绘制图像
+    image_path = "ranking_visualization.png"
+    image = figure.add_subplot(111)
+    image.axis("off")
+    image.imshow(plt.imread(image_path))
+
+    # 添加Matplotlib导航工具栏
+    toolbar = NavigationToolbar2Tk(canvas, window)
+    toolbar.update()
+
+    # 将画布放置在窗口中
+    canvas.get_tk_widget().pack()
+
+    # 指定文本文件路径
+    path_to_file = r"sorted_output.txt"
+
+    # 使用os模块的startfile()函数打开文本文件
+    os.startfile(path_to_file)
+
+    # 指定文本文件路径
+    path_to_file = r"ranking_visualization.png"
+
+    # 使用os模块的startfile()函数打开文本文件
+    os.startfile(path_to_file)
+
+
+    # 运行Tkinter事件循环
+    window.mainloop()
 
 
 # user_id对照字典，为防止有人改备注名、乱拉小号或备注名中存在非法字符导致程序报错，所以此字典由|疯子XUFUYU|人工统计于2023/6/25/15:19:23/
@@ -234,15 +273,47 @@ user_id_sat = {"234895":"孔浩轩",
 
 msg('有人运行了你的程序！时间：{}'.format(chinese_time))
 
-user_input = input("请输入你要的方式：\n1.周五并排序并生成柱状图\n2.周六并排序并生成柱状图\n3.全部并排序并生成柱状图\n")
+# user_input = input("请输入你要的方式：\n1.周五并排序并生成柱状图\n2.周六并排序并生成柱状图\n3.全部并排序并生成柱状图\n")
 
-data(user_input)
+# data(user_input)
 
 # 调用函数进行排序
-binary_insertion_sort('output.txt', 'sorted_output.txt')
+# binary_insertion_sort('output.txt', 'sorted_output.txt')
 
 # 调用函数生成可视化图像
-visualize_data('sorted_output.txt', 'ranking_visualization.png')
+# visualize_data('sorted_output.txt', 'ranking_visualization.png')
 
+
+root = tk.Tk()
+root.title("数据处理")
+root.geometry("300x200")
+center_window(root,300,200)
+# 禁止窗口调整大小
+root.resizable(width=False, height=False)
+
+option_var = tk.StringVar()
+option_var.set("1")
+
+label = tk.Label(root, text="请选择数据处理方式:")
+label.pack()
+
+radio_btn1 = tk.Radiobutton(root, text="周五并排序并生成柱状图", variable=option_var, value="1")
+radio_btn1.pack()
+
+radio_btn2 = tk.Radiobutton(root, text="周六并排序并生成柱状图", variable=option_var, value="2")
+radio_btn2.pack()
+
+radio_btn3 = tk.Radiobutton(root, text="全部并排序并生成柱状图", variable=option_var, value="3")
+radio_btn3.pack()
+
+# 设置默认选项
+option_var.set("3")
+radio_btn3.select()  # 设置默认选项为选中状态
+
+
+process_btn = tk.Button(root, text="处理数据", command=data)
+process_btn.pack()
+
+root.mainloop()
 
 msg('安全运行未报错！时间：{}'.format(chinese_time))
