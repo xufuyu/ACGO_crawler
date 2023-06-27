@@ -319,6 +319,7 @@ root = tk.Tk()
 root.title("数据处理---Powered by 疯子XUFUYU")
 root.geometry("300x200")
 center_window(root,300,200)
+
 # 禁止窗口调整大小
 root.resizable(width=False, height=False)
 
