@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import time
 import tkinter as tk
 import matplotlib.pyplot as plt
@@ -11,6 +12,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from tkinter import ttk
+import os
+import datetime
+
+if not os.path.exists('icon.ico'):
+    icon = requests.get('https://www.acgo.cn/favicon.ico')
+    with open('icon.ico', 'wb') as icon_file:
+        icon_file.write(icon.content)
 
 
 chinese_time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
@@ -67,14 +75,17 @@ def find(html):
 
     # 打印提取到的内容
     return span_content
+dict_1 = []
 
 def data():
+    global dict_1
     mode = option_var.get()
     root.destroy()
 
     # 创建主窗口
     root_add = tk.Tk()
     center_window(root_add, 300, 100)
+    root_add.iconbitmap('icon.ico')
     # 禁止窗口调整大小
     root_add.resizable(width=False, height=False)
     root_add.title("加载中---Powered by 疯子XUFUYU")
@@ -97,6 +108,7 @@ def data():
             name = user_id_fir[i]
             ac_data = find(acgo(i))
             print(name, ac_data)
+            dict_1.append(int(ac_data))
             # 更新进度条
             num += 1
             progress_var.set(num * 100 / len(user_id_fir))
@@ -109,10 +121,12 @@ def data():
             name = user_id_sat[i]
             ac_data = find(acgo(i))
             print(name, ac_data)
+            dict_1.append(int(ac_data))
             # 更新进度条
             num += 1
             progress_var.set(num * 100 / len(user_id_sat))
             root_add.update()
+            file.write(name + ' ' + ac_data + '\n')
 
     elif mode == "3":
         print('已运行，请等待\n')
@@ -120,6 +134,7 @@ def data():
             name = user_id_all[i]
             ac_data = find(acgo(i))
             print(name, ac_data)
+            dict_1.append(int(ac_data))
             # 更新进度条
             num += 1
             progress_var.set(num * 100 / len(user_id_all))
@@ -182,6 +197,7 @@ def binary_insertion_sort(input_file, output_file):
 
 
 def visualize_data(input_file, output_file):
+    global dict_1
     # 读取数据
     with open(input_file, 'r', encoding='utf-8') as file:
         lines = file.readlines()
@@ -197,26 +213,33 @@ def visualize_data(input_file, output_file):
     plt.rcParams['font.family'] = 'SimHei'  # 使用黑体作为字体
 
     # 创建柱状图
-    plt.figure(figsize=(10, 6))
-    plt.bar(names, scores)
+    fig, ax = plt.subplots(figsize=(13, 8))
+    ax.bar(names, scores)
 
     # 添加标题和标签
-    plt.title('排名情况')
-    plt.xlabel('姓名')
-    plt.ylabel('累计解题数')
+    ax.set_title('排名情况---Powered by 疯子XUFUYU')
+    ax.set_xlabel('姓名')
+    ax.set_ylabel('累计解题数')
 
     # 自动调整名称显示角度以避免重叠
     plt.xticks(rotation=45, ha='right')
 
+    # 设置y轴刻度范围
+    ax.set_ylim([0, max(dict_1) + 30])
+
     # 在每个柱上标出详细数据
     for i in range(len(names)):
-        plt.text(names[i], scores[i], str(scores[i]), ha='center', va='bottom')
+        ax.text(names[i], scores[i], str(scores[i]), ha='center', va='bottom')
+
+    # 添加生成时间到左上角
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    ax.text(0.02, 0.98, f'Generated on: {current_time}', transform=ax.transAxes,
+            fontsize=10, color='black', va='top', ha='left', backgroundcolor='white')
 
     # 保存图像
     plt.tight_layout()
     plt.savefig(output_file)
 
-    print(f"可视化图像已成功保存为{output_file}。")
 
 
 
@@ -225,6 +248,7 @@ def tk_output():
     window = tk.Tk()
     window.title("输出窗口---Powered by 疯子XUFUYU")
     center_window(window, 1000, 600)
+    window.iconbitmap('icon.ico')
     # 禁止窗口调整大小
     window.resizable(width=False, height=False)
 
@@ -249,57 +273,9 @@ def tk_output():
     window.mainloop()
 
 
-# user_id对照字典，为防止有人改备注名、乱拉小号或备注名中存在非法字符导致程序报错，所以此字典由|疯子XUFUYU|人工统计于2023/6/25/15:19:23/
-user_id_all = {"234895":"孔浩轩",
-               "732967":"张辰奕",
-               "735046":"倪晨皞",
-               "751543":"王英航",
-               "769326":"叶毅熙",
-               "984802":"周韩",
-               "1043436":"孙泽恩",
-               "1404944":"杨沛铮",
-               "1590475":"郎逸琳",
-               "2029294":"唐伊辰",
-               "2484958":"徐付豫",
-               "3069027":"盛函",
-               "3798554":"吴宇浩",
-               "644850":"杨铮",
-               "698775":"徐泽楷",
-               "748554":"-",
-               "1003581":"袁正赫",
-               "1146500":"看他名字",
-               "1490721":"陈卓燃",
-               "1961609":"王皓煜",
-               "2723979":"徐善豪",
-               "2789929":"陆思源",
-               "3225899":"孙雨泽"
-               }
-
-user_id_fir = {"644850":"杨铮",
-               "698775":"徐泽楷",
-               "748554":"-",
-               "1003581":"袁正赫",
-               "1146500":"看他名字",
-               "1490721":"陈卓燃",
-               "1961609":"王皓煜",
-               "2723979":"徐善豪",
-               "2789929":"陆思源",
-               "3225899":"孙雨泽"
-               }
-
-user_id_sat = {"234895":"孔浩轩",
-               "732967":"张辰奕",
-               "735046":"倪晨皞",
-               "751543":"王英航",
-               "769326":"叶毅熙",
-               "984802":"周韩",
-               "1043436":"孙泽恩",
-               "1404944":"杨沛铮",
-               "1590475":"郎逸琳",
-               "2029294":"唐伊辰",
-               "2484958":"徐付豫",
-               "3069027":"盛函",
-               "3798554":"吴宇浩",
+# user_id对照字典，为防止有人改备注名、乱拉小号或备注名中存在非法字符导致程序报错，所以此字典请自行更改
+user_id_all = {"None":"None",# 字典前为user_id，后为自定义显示昵称
+               "":""
                }
 
 msg('有人运行了你的程序！时间：{}'.format(chinese_time))
@@ -319,7 +295,7 @@ root = tk.Tk()
 root.title("数据处理---Powered by 疯子XUFUYU")
 root.geometry("300x200")
 center_window(root,300,200)
-
+root.iconbitmap('icon.ico')
 # 禁止窗口调整大小
 root.resizable(width=False, height=False)
 
@@ -329,10 +305,10 @@ option_var.set("1")
 label = tk.Label(root, text="请选择数据处理方式:")
 label.pack()
 
-radio_btn1 = tk.Radiobutton(root, text="周五并排序并生成柱状图", variable=option_var, value="1")
+radio_btn1 = tk.Radiobutton(root, text="正在制作", variable=option_var, value="0")
 radio_btn1.pack()
 
-radio_btn2 = tk.Radiobutton(root, text="周六并排序并生成柱状图", variable=option_var, value="2")
+radio_btn2 = tk.Radiobutton(root, text="正在制作", variable=option_var, value="0")
 radio_btn2.pack()
 
 radio_btn3 = tk.Radiobutton(root, text="全部并排序并生成柱状图", variable=option_var, value="3")
