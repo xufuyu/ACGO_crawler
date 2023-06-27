@@ -17,7 +17,7 @@ chinese_time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 
 
 
-print('运行时间：',chinese_time,'\n')
+print('运行时间：',chinese_time,'\n','Powered by 疯子XUFUYU','\n')
 
 
 def msg(msg_text='TEST', msg_key='PDU23609TxBbjyT6HfCwEZUt4zLlxF2pfMOf7MGa9'):
@@ -77,7 +77,7 @@ def data():
     center_window(root_add, 300, 100)
     # 禁止窗口调整大小
     root_add.resizable(width=False, height=False)
-    root_add.title("加载中")
+    root_add.title("加载中---Powered by 疯子XUFUYU")
 
     # 创建Label小部件并显示文字
     tk.Label(root_add, text="加载中...").pack()
@@ -223,7 +223,7 @@ def visualize_data(input_file, output_file):
 def tk_output():
     # 创建Tkinter窗口
     window = tk.Tk()
-    window.title("输出窗口")
+    window.title("输出窗口---Powered by 疯子XUFUYU")
     center_window(window, 1000, 600)
     # 禁止窗口调整大小
     window.resizable(width=False, height=False)
@@ -316,7 +316,7 @@ msg('有人运行了你的程序！时间：{}'.format(chinese_time))
 
 
 root = tk.Tk()
-root.title("数据处理")
+root.title("数据处理---Powered by 疯子XUFUYU")
 root.geometry("300x200")
 center_window(root,300,200)
 # 禁止窗口调整大小
