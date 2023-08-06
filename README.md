@@ -1,7 +1,5 @@
 # ACGO爬虫
-
 ## 一个基于python与Chrome WebDriver实现的ACGO爬虫。
-
 <script>
 #background{
 background-image:url('background-img.jpg');
