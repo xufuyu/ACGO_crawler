@@ -1,10 +1,19 @@
 # ACGO爬虫
+
 ## 一个基于python与Chrome WebDriver实现的ACGO爬虫。
-<p align="center">
-  <a href="https://xufuyu.eu.org/">
-    <img src="https://www.acgo.cn/_next/image?url=https%3A%2F%2Fxmcdn.oss-cn-shanghai.aliyuncs.com%2Fcpp_community%2Fimages%2Flogo.png&w=256&q=100"alt="logo">
-  </a>
-</p>
+
+<script>
+#background{
+background-image:url('background-img.jpg');
+background-size:"black";
+}
+</script>
+<div id="background" align="center">
+    <a href="https://xufuyu.eu.org/">
+        <img src="https://www.acgo.cn/_next/image?url=https%3A%2F%2Fxmcdn.oss-cn-shanghai.aliyuncs.com%2Fcpp_community%2Fimages%2Flogo.png&w=256&q=100"alt="logo">
+    </a>
+</div>
+
 <div align="center">
 _✨ 基于Chrome WebDriver实现的爬虫 ✨_  
 </div>
