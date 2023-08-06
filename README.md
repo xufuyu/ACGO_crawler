@@ -2,7 +2,7 @@
 ## 一个基于python与Chrome WebDriver实现的ACGO爬虫。
 <div id="background" align="center">
     <a href="https://xufuyu.eu.org/">
-        <img src="https://www.acgo.cn/_next/image?url=https%3A%2F%2Fxmcdn.oss-cn-shanghai.aliyuncs.com%2Fcpp_community%2Fimages%2Flogo.png&w=256&q=100"alt="logo">
+        <img src="https://cdn.jsdelivr.net/gh/xufuyu/cdn@master/logo~1.png"alt="logo">
     </a>
 </div>
 
