@@ -1,11 +1,5 @@
 # ACGO爬虫
 ## 一个基于python与Chrome WebDriver实现的ACGO爬虫。
-<script>
-#background{
-background-image:url('background-img.jpg');
-background-size:"black";
-}
-</script>
 <div id="background" align="center">
     <a href="https://xufuyu.eu.org/">
         <img src="https://www.acgo.cn/_next/image?url=https%3A%2F%2Fxmcdn.oss-cn-shanghai.aliyuncs.com%2Fcpp_community%2Fimages%2Flogo.png&w=256&q=100"alt="logo">
@@ -46,15 +40,21 @@ _✨ 基于Chrome WebDriver实现的爬虫 ✨_
 </p>
 
 ### 项目背景
-### PyQQbot一个作者没事情干的时候写的QQ机器人
-#### PyQQbot操作手册:[临时消息不回复]
+
+###  
+
+#### 操作手册:
 
 #### 别的功能还在如火如荼的制作当中~
+
 ### 上手指南
+
 ## 环境要求
+
 系统不限\
 python 3.8\
 Chrome WebDriver
+
 ## 安装步骤
 
 ## 框架或者技术选型
