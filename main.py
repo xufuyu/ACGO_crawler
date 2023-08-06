@@ -157,9 +157,6 @@ def data():
     # 运行主循环
     root_add.mainloop()
 
-
-
-
 def binary_insertion_sort(input_file, output_file):
     # 读取数据
     with open(input_file, 'r', encoding='utf-8') as file:
